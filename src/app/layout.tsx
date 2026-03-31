@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
-import { Space_Grotesk, Outfit } from 'next/font/google';
+import { Space_Grotesk, Outfit, Noto_Sans_SC, Geist } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -15,6 +17,12 @@ const outfit = Outfit({
   weight: ['300', '400', '500', '600', '700']
 });
 
+const notoSansSC = Noto_Sans_SC({
+  subsets: ['latin'],
+  variable: '--font-chinese',
+  weight: ['400', '500', '600', '700']
+});
+
 export const metadata: Metadata = {
   title: 'AI Tools Blog - 产品落地全流程 AI 工具分享',
   description: '分享产品从 0-1 落地全过程中使用的 AI 工具，包括产品设计、UI/UX、前端开发、后端开发、测试等各阶段'
@@ -26,8 +34,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='zh-CN' className='scroll-smooth'>
-      <body className={cn(spaceGrotesk.variable, outfit.variable, 'min-h-screen antialiased')}>{children}</body>
+    <html lang='zh-CN' className={cn("scroll-smooth", "font-sans", geist.variable)}>
+      <body className={cn(spaceGrotesk.variable, outfit.variable, notoSansSC.variable, 'min-h-screen antialiased font-sans')}>
+        {children}
+      </body>
     </html>
   );
 }

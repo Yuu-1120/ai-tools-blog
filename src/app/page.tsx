@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   ArrowRight,
   Sparkles,
@@ -17,8 +17,19 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { HomeData } from '@/types/home';
 
+const Antigravity = dynamic(() => import('@/components/Antigravity'), { ssr: false });
 const Ribbons = dynamic(() => import('@/components/Ribbons'), { ssr: false });
+
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Sparkles,
+  Code,
+  Palette,
+  TestTube,
+  Layers,
+  Bot
+};
 
 function RibbonBackground() {
   const [mounted, setMounted] = useState(false);
@@ -37,37 +48,6 @@ function RibbonBackground() {
     </div>
   );
 }
-
-const categories = [
-  {
-    name: '产品设计',
-    icon: Sparkles,
-    slug: 'product',
-    color: 'from-violet-500 to-purple-600',
-    bgColor: 'bg-violet-50'
-  },
-  { name: 'UI/UX 设计', icon: Palette, slug: 'design', color: 'from-pink-500 to-rose-600', bgColor: 'bg-pink-50' },
-  { name: '前端开发', icon: Code, slug: 'frontend', color: 'from-blue-500 to-cyan-600', bgColor: 'bg-blue-50' },
-  { name: '后端开发', icon: Layers, slug: 'backend', color: 'from-emerald-500 to-teal-600', bgColor: 'bg-emerald-50' },
-  { name: '测试', icon: TestTube, slug: 'test', color: 'from-amber-500 to-orange-600', bgColor: 'bg-amber-50' },
-  { name: 'AI 工具', icon: Bot, slug: 'tools', color: 'from-indigo-500 to-violet-600', bgColor: 'bg-indigo-50' }
-];
-
-const featuredTools = [
-  { name: 'ChatGPT', category: '产品设计', users: '180M+', desc: '全能 AI 助手' },
-  { name: 'Claude', category: '产品设计', users: '25M+', desc: '编程与写作神器' },
-  { name: 'Cursor', category: '前端开发', users: '4M+', desc: 'AI 驱动的 IDE' },
-  { name: 'Figma AI', category: 'UI/UX 设计', users: '10M+', desc: '智能设计工具' }
-];
-
-const processSteps = [
-  { step: '01', title: '产品设计', desc: '需求分析 · 竞品分析 · 思维导图', tools: ['ChatGPT', 'Claude', 'Miro AI'] },
-  { step: '02', title: '需求评审', desc: 'PRD 文档 · 评审会议 · 原型设计', tools: ['Notion AI', 'Figma'] },
-  { step: '03', title: 'UI/UX 设计', desc: '设计稿 · 交互规范 · 品牌设计', tools: ['Figma AI', 'Midjourney'] },
-  { step: '04', title: '前端开发', desc: '组件库 · 页面开发 · 动画实现', tools: ['Cursor', 'v0', 'GitHub Copilot'] },
-  { step: '05', title: '后端开发', desc: 'API 设计 · 数据库 · 架构设计', tools: ['Cursor', 'Bolt.new'] },
-  { step: '06', title: '测试', desc: '单元测试 · E2E · 性能测试', tools: ['AI Test', 'Applitools'] }
-];
 
 const container = {
   hidden: { opacity: 0 },
@@ -137,22 +117,88 @@ function GlowOrb({ className }: { className?: string }) {
 }
 
 export default function Home() {
+  const [homeData, setHomeData] = useState<HomeData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    async function fetchHomeData() {
+      try {
+        const res = await fetch('/api/home');
+        const result = await res.json();
+        if (result.code === 200 && result.data) {
+          setHomeData(result.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch home data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchHomeData();
+  }, []);
+
   const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
+  const { scrollYProgress } = useScroll();
+  const headerScroll = useScroll({
     target: ref,
     offset: ['start start', 'end start']
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const y = useTransform(headerScroll.scrollYProgress, [0, 1], [0, 200]);
+  const opacity = useTransform(headerScroll.scrollYProgress, [0, 0.5], [1, 0]);
+
+  if (loading) {
+    return (
+      <main className='min-h-screen bg-[#F5EBE0]'>
+        <div className='gradient-mesh fixed inset-0 -z-10' />
+        <div className='flex items-center justify-center min-h-screen'>
+          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-[#D5BDAF]' />
+        </div>
+      </main>
+    );
+  }
+
+  const categories = homeData?.categories || [];
+  const featuredTools = homeData?.featuredTools || [];
+  const processSteps = homeData?.processSteps || [];
 
   return (
     <main className='min-h-screen bg-[#F5EBE0]'>
+      {mounted && (
+        <motion.div
+          className='fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#D5BDAF] to-[#1a1a1a] z-50 origin-left'
+          style={{ scaleX: scrollYProgress }}
+        />
+      )}
+
       <div className='gradient-mesh fixed inset-0 -z-10' />
 
-      <RibbonBackground />
-
       <section ref={ref} className='relative min-h-screen flex items-center justify-center overflow-hidden'>
+        <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
+          <Antigravity
+            count={300}
+            magnetRadius={10}
+            ringRadius={10}
+            waveSpeed={0.4}
+            waveAmplitude={1}
+            particleSize={2}
+            lerpSpeed={0.1}
+            color='#ffb481'
+            autoAnimate={false}
+            particleVariance={1}
+            rotationSpeed={0}
+            depthFactor={1}
+            pulseSpeed={3}
+            particleShape='capsule'
+            fieldStrength={10}
+          />
+        </div>
+
         <GlowOrb className='w-96 h-96 bg-[#D5BDAF]/20 -top-20 -left-20' />
         <GlowOrb className='w-80 h-80 bg-[#E3D5CA]/30 top-1/2 -right-20' />
 
@@ -175,7 +221,7 @@ export default function Home() {
             </motion.div>
           </motion.div>
 
-          <motion.h1 className='text-6xl md:text-7xl lg:text-[8rem] font-bold tracking-tight mb-10 leading-[1.1]'>
+          <motion.h1 className='text-6xl md:text-7xl lg:text-[8rem] font-bold tracking-tight mb-10 leading-[1.1] font-display'>
             <motion.span
               className='text-[#1a1a1a] block'
               initial={{ opacity: 0, x: -50 }}
@@ -200,7 +246,7 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.6 }}
           >
-            <p className='text-lg md:text-xl text-[#6B6B6B] max-w-2xl mx-auto leading-relaxed'>
+            <p className='text-lg md:text-xl text-[#6B6B6B] max-w-2xl mx-auto leading-relaxed font-chinese'>
               记录产品从{' '}
               <motion.span
                 className='text-[#1a1a1a] font-bold'
@@ -211,7 +257,7 @@ export default function Home() {
               </motion.span>{' '}
               落地全流程
             </p>
-            <p className='text-lg md:text-xl text-[#6B6B6B] max-w-2xl mx-auto leading-relaxed'>
+            <p className='text-lg md:text-xl text-[#6B6B6B] max-w-2xl mx-auto leading-relaxed font-chinese'>
               分享每个阶段可使用的 <span className='text-[#1a1a1a] font-bold'>AI 工具</span>
             </p>
           </motion.div>
@@ -321,7 +367,7 @@ export default function Home() {
         </motion.div>
       </section>
 
-      <section className='py-24 px-4'>
+      <section className='py-24 px-4 min-h-screen'>
         <div className='max-w-6xl mx-auto'>
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -331,8 +377,8 @@ export default function Home() {
             className='flex items-end justify-between mb-12'
           >
             <div>
-              <h2 className='text-3xl md:text-5xl font-bold text-[#1a1a1a] mb-3'>选择你的阶段</h2>
-              <p className='text-[#6B6B6B] text-lg'>按产品落地流程分类，发现各阶段最佳 AI 工具</p>
+              <h2 className='text-3xl md:text-5xl font-bold text-[#1a1a1a] mb-3 font-display'>选择你的阶段</h2>
+              <p className='text-[#6B6B6B] text-lg font-chinese'>按产品落地流程分类，发现各阶段最佳 AI 工具</p>
             </div>
           </motion.div>
 
@@ -352,11 +398,13 @@ export default function Home() {
                     transition={{ duration: 0.3 }}
                   >
                     <div
-                      className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br ${category.color}`}
+                      className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br ${category.color || ''}`}
                       style={{ mixBlendMode: 'soft-light' }}
                     />
-                    <div className={`relative inline-flex p-3 rounded-xl ${category.bgColor} mb-4`}>
-                      <category.icon className='w-6 h-6 text-[#1a1a1a]' />
+                    <div className={`relative inline-flex p-3 rounded-xl ${category.bg_color} mb-4`}>
+                      {category.icon &&
+                        iconMap[category.icon] &&
+                        React.createElement(iconMap[category.icon], { className: 'w-6 h-6 text-[#1a1a1a]' })}
                     </div>
                     <h3 className='text-xl font-bold text-[#1a1a1a] mb-1 group-hover:translate-x-1 transition-transform'>
                       {category.name}
@@ -370,7 +418,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className='py-24 px-4 bg-white/50'>
+      <section className='py-24 px-4 bg-white/50 min-h-screen'>
         <div className='max-w-6xl mx-auto'>
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -383,8 +431,8 @@ export default function Home() {
               <Star className='w-5 h-5 text-amber-500 fill-amber-500' />
               <span className='text-sm font-medium text-[#6B6B6B]'>热门工具</span>
             </div>
-            <h2 className='text-3xl md:text-5xl font-bold text-[#1a1a1a] mb-3'>最受欢迎的 AI 工具</h2>
-            <p className='text-[#6B6B6B] text-lg'>开发者们正在使用的 AI 工具推荐</p>
+            <h2 className='text-3xl md:text-5xl font-bold text-[#1a1a1a] mb-3 font-display'>最受欢迎的 AI 工具</h2>
+            <p className='text-[#6B6B6B] text-lg font-chinese'>开发者们正在使用的 AI 工具推荐</p>
           </motion.div>
 
           <motion.div
@@ -396,7 +444,7 @@ export default function Home() {
           >
             {featuredTools.map((tool, index) => (
               <motion.div
-                key={tool.name}
+                key={tool.id}
                 variants={itemStagger}
                 className='group relative p-6 bg-white rounded-2xl border-2 border-[#E5E0D8] hover:border-[#D5BDAF] card-hover'
                 whileHover={{ y: -5 }}
@@ -415,10 +463,10 @@ export default function Home() {
                   </span>
                 </div>
                 <h3 className='text-xl font-bold text-[#1a1a1a] mb-1'>{tool.name}</h3>
-                <p className='text-[#6B6B6B] text-sm mb-3'>{tool.desc}</p>
+                <p className='text-[#6B6B6B] text-sm mb-3'>{tool.description}</p>
                 <div className='flex items-center gap-2 text-sm text-[#9CA3AF]'>
                   <TrendingUp className='w-4 h-4' />
-                  <span>{tool.category}</span>
+                  <span>{tool.category_slug}</span>
                 </div>
               </motion.div>
             ))}
@@ -426,7 +474,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className='py-24 px-4'>
+      <section className='py-24 px-4 min-h-screen'>
         <div className='max-w-6xl mx-auto'>
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -435,8 +483,8 @@ export default function Home() {
             transition={{ duration: 0.6 }}
             className='mb-12'
           >
-            <h2 className='text-3xl md:text-5xl font-bold text-[#1a1a1a] mb-3'>产品落地流程</h2>
-            <p className='text-[#6B6B6B] text-lg'>从 0 到 1 的完整指南</p>
+            <h2 className='text-3xl md:text-5xl font-bold text-[#1a1a1a] mb-3 font-display'>产品落地流程</h2>
+            <p className='text-[#6B6B6B] text-lg font-chinese'>从 0 到 1 的完整指南</p>
           </motion.div>
 
           <motion.div
@@ -465,9 +513,9 @@ export default function Home() {
                 </div>
                 <div className='flex-1'>
                   <h3 className='text-2xl font-bold text-[#1a1a1a] mb-2'>{process.title}</h3>
-                  <p className='text-[#6B6B6B] mb-3'>{process.desc}</p>
+                  <p className='text-[#6B6B6B] mb-3'>{process.description}</p>
                   <div className='flex flex-wrap gap-2'>
-                    {process.tools.map((tool) => (
+                    {process.tools?.map((tool: string) => (
                       <span
                         key={tool}
                         className='px-3 py-1 rounded-full bg-[#F5EBE0] text-[#6B6B6B] text-sm font-medium'

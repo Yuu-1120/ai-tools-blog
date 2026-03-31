@@ -36,7 +36,9 @@ const config: Config = {
         ring: "#D5BDAF",
       },
       fontFamily: {
-        sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
+        sans: ["var(--font-body)", "var(--font-chinese)", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "system-ui", "sans-serif"],
+        chinese: ["var(--font-chinese)", "system-ui", "sans-serif"],
         mono: ["var(--font-geist-mono)", "monospace"],
       },
       borderRadius: {
