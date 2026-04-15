@@ -4,21 +4,24 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-border",
-        destructive: "bg-red-500 text-white hover:bg-red-600 border-2 border-red-600",
-        outline: "bg-transparent border-2 border-border hover:bg-primary/50",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 border-2 border-border",
-        ghost: "hover:bg-primary/50 hover:text-primary-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+        default: "bg-terracotta text-ivory hover:bg-coral shadow-[0px_0px_0px_1px_#c96442]",
+        destructive: "bg-red-500 text-white hover:bg-red-600",
+        outline: "bg-transparent border border-border-cream hover:bg-warmSand text-charcoalWarm",
+        secondary: "bg-warmSand text-charcoalWarm hover:bg-border-warm shadow-[0px_0px_0px_1px_#d1cfc5]",
+        ghost: "hover:bg-warmSand hover:text-nearBlack",
+        link: "text-terracotta underline-offset-4 hover:underline",
+        terracotta: "bg-terracotta text-ivory hover:bg-coral shadow-[0px_0px_0px_1px_#c96442]",
+        "warm-sand": "bg-warmSand text-charcoalWarm hover:bg-border-warm shadow-[0px_0px_0px_1px_#d1cfc5]",
+        "dark-surface": "bg-darkSurface text-ivory hover:bg-nearBlack shadow-[0px_0px_0px_1px_#30302e]",
       },
       size: {
-        default: "h-10 px-4 py-2",
+        default: "h-10 px-5 py-2 rounded-lg",
         sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
+        lg: "h-11 rounded-lg px-8",
         icon: "h-10 w-10",
       },
     },

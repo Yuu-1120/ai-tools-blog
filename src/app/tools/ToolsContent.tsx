@@ -16,12 +16,11 @@ import {
   Search,
   Filter,
   ExternalLink,
-  Star,
   TrendingUp
 } from "lucide-react";
 
 const categoryConfig = [
-  { name: "全部", icon: Sparkles, slug: "all", color: "from-gray-500 to-gray-600", bgColor: "bg-gray-50" },
+  { name: "全部", icon: Sparkles, slug: "all", color: "from-stone-gray to-olive-gray", bgColor: "bg-warmSand" },
   { name: "产品设计", icon: Sparkles, slug: "product", color: "from-violet-500 to-purple-600", bgColor: "bg-violet-50" },
   { name: "UI/UX 设计", icon: Palette, slug: "design", color: "from-pink-500 to-rose-600", bgColor: "bg-pink-50" },
   { name: "前端开发", icon: Code, slug: "frontend", color: "from-blue-500 to-cyan-600", bgColor: "bg-blue-50" },
@@ -71,29 +70,27 @@ export default function ToolsContent() {
 
   useEffect(() => {
     let result = toolsData;
-    
+
     if (activeCategory !== "all") {
       result = result.filter(tool => tool.category === activeCategory);
     }
-    
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(tool => 
+      result = result.filter(tool =>
         tool.name.toLowerCase().includes(query) ||
         tool.desc.toLowerCase().includes(query) ||
         tool.tags.some(tag => tag.toLowerCase().includes(query))
       );
     }
-    
+
     setFilteredTools(result);
   }, [activeCategory, searchQuery]);
 
-  const activeConfig = categoryConfig.find(c => c.slug === activeCategory) || categoryConfig[0];
-
   return (
-    <main className="min-h-screen bg-[#F5EBE0]">
-      <div className="gradient-mesh fixed inset-0 -z-10" />
-      
+    <main className="min-h-screen bg-parchment">
+      <div className="fixed inset-0 -z-10" style={{ background: 'radial-gradient(circle at 50% 30%, rgba(201,100,66,0.05) 0%, transparent 60%)' }} />
+
       <section className="relative py-20 px-4 overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -105,28 +102,28 @@ export default function ToolsContent() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 backdrop-blur-sm border border-[#D5CFC5] text-sm font-medium text-[#6B6B6B] mb-6"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ivory border border-border-cream text-sm font-medium text-olive-gray mb-6"
           >
-            <Zap className="w-4 h-4 text-amber-500" />
+            <Zap className="w-4 h-4 text-terracotta" />
             <span>AI Tools Collection</span>
           </motion.div>
-          
-          <h1 className="text-4xl md:text-6xl font-bold text-[#1a1a1a] mb-4">
-            <span className="text-[#D5BDAF]">AI</span> 工具库
+
+          <h1 className="text-4xl md:text-6xl font-serif font-medium text-nearBlack mb-4">
+            <span className="text-terracotta">AI</span> 工具库
           </h1>
-          
-          <p className="text-lg text-[#6B6B6B] max-w-2xl mx-auto mb-8">
+
+          <p className="text-lg text-olive-gray max-w-2xl mx-auto mb-10">
             发现并探索产品落地各阶段的最佳 AI 工具
           </p>
 
           <div className="max-w-xl mx-auto relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-gray" />
             <input
               type="text"
               placeholder="搜索工具名称、功能或标签..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 rounded-full bg-white border border-[#E5E0D8] focus:border-[#D5BDAF] focus:outline-none focus:ring-2 focus:ring-[#D5BDAF]/20 transition-all shadow-sm"
+              className="w-full pl-12 pr-4 py-4 rounded-full bg-ivory border border-border-cream focus:border-terracotta focus:outline-none focus:ring-2 focus:ring-terracotta/20 transition-all"
             />
           </div>
         </motion.div>
@@ -146,11 +143,11 @@ export default function ToolsContent() {
                 onClick={() => setActiveCategory(category.slug)}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-medium text-sm transition-all ${
                   activeCategory === category.slug
-                    ? `bg-[#1a1a1a] text-white shadow-lg`
-                    : "bg-white text-[#6B6B6B] border border-[#E5E0D8] hover:border-[#D5BDAF]"
+                    ? "bg-nearBlack text-ivory shadow-lg"
+                    : "bg-ivory text-olive-gray border border-border-cream hover:border-border-warm"
                 }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
               >
                 <category.icon className="w-4 h-4" />
                 {category.name}
@@ -163,8 +160,8 @@ export default function ToolsContent() {
       <section className="py-12 px-4 pb-24">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <p className="text-[#6B6B6B]">
-              共 <span className="font-semibold text-[#1a1a1a]">{filteredTools.length}</span> 个工具
+            <p className="text-olive-gray">
+              共 <span className="font-medium text-nearBlack">{filteredTools.length}</span> 个工具
               {activeCategory !== "all" && (
                 <span className="ml-2">
                   （{categoryConfig.find(c => c.slug === activeCategory)?.name}）
@@ -172,18 +169,18 @@ export default function ToolsContent() {
               )}
             </p>
           </div>
-          
+
           {filteredTools.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="text-center py-20"
             >
-              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#E5E0D8] flex items-center justify-center">
-                <Search className="w-10 h-10 text-[#9CA3AF]" />
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-warmSand flex items-center justify-center">
+                <Search className="w-10 h-10 text-stone-gray" />
               </div>
-              <h3 className="text-xl font-semibold text-[#1a1a1a] mb-2">未找到相关工具</h3>
-              <p className="text-[#6B6B6B]">试试其他关键词或分类</p>
+              <h3 className="text-xl font-serif font-medium text-nearBlack mb-2">未找到相关工具</h3>
+              <p className="text-olive-gray">试试其他关键词或分类</p>
             </motion.div>
           ) : (
             <motion.div
@@ -196,55 +193,58 @@ export default function ToolsContent() {
                 <motion.div
                   key={tool.id}
                   variants={item}
-                  className="group relative bg-white rounded-2xl border-2 border-[#E5E0D8] hover:border-[#D5BDAF] transition-all overflow-hidden"
-                  whileHover={{ y: -5 }}
+                  className="group relative bg-ivory rounded-xl border border-border-cream hover:shadow-whisper transition-all duration-300 overflow-hidden"
+                  whileHover={{ y: -4 }}
                 >
                   <div className="p-6">
-                    <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-start justify-between mb-5">
                       <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#D5BDAF] to-[#E5E0D8] flex items-center justify-center text-xl font-bold text-[#1a1a1a]">
+                        <div
+                          className="w-14 h-14 rounded-lg flex items-center justify-center text-xl font-serif font-medium text-ivory"
+                          style={{ backgroundColor: '#c96442' }}
+                        >
                           {tool.name.charAt(0)}
                         </div>
                         <div>
-                          <h3 className="text-lg font-bold text-[#1a1a1a]">{tool.name}</h3>
-                          <div className="flex items-center gap-1 text-sm text-[#9CA3AF]">
+                          <h3 className="text-lg font-serif font-medium text-nearBlack">{tool.name}</h3>
+                          <div className="flex items-center gap-1 text-sm text-stone-gray">
                             <TrendingUp className="w-3 h-3" />
                             <span>{tool.users} 用户</span>
                           </div>
                         </div>
                       </div>
                       {tool.featured && (
-                        <span className="px-2 py-1 rounded-full bg-amber-50 text-amber-600 text-xs font-medium">
+                        <span className="px-2 py-1 rounded-full bg-warmSand text-terracotta text-xs font-medium">
                           热门
                         </span>
                       )}
                     </div>
-                    
-                    <p className="text-[#6B6B6B] text-sm mb-4 line-clamp-2">
+
+                    <p className="text-olive-gray text-sm mb-5 line-clamp-2">
                       {tool.desc}
                     </p>
-                    
-                    <div className="flex flex-wrap gap-2 mb-4">
+
+                    <div className="flex flex-wrap gap-2 mb-5">
                       {tool.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="px-2 py-1 rounded-full bg-[#F5EBE0] text-[#6B6B6B] text-xs"
+                          className="px-2 py-1 rounded-full bg-warmSand text-charcoalWarm text-xs"
                         >
                           {tag}
                         </span>
                       ))}
                     </div>
-                    
-                    <div className="flex items-center justify-between pt-4 border-t border-[#E5E0D8]">
+
+                    <div className="flex items-center justify-between pt-4 border-t border-border-cream">
                       <Link
                         href={`/tools/${tool.id}`}
-                        className="flex items-center gap-1 text-sm font-medium text-[#1a1a1a] group-hover:text-[#D5BDAF] transition-colors"
+                        className="flex items-center gap-1 text-sm font-medium text-nearBlack group-hover:text-terracotta transition-colors"
                       >
                         查看详情
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </Link>
-                      <button className="p-2 rounded-full hover:bg-[#F5EBE0] transition-colors">
-                        <ExternalLink className="w-4 h-4 text-[#9CA3AF]" />
+                      <button className="p-2 rounded-full hover:bg-warmSand transition-colors">
+                        <ExternalLink className="w-4 h-4 text-stone-gray" />
                       </button>
                     </div>
                   </div>
@@ -255,9 +255,9 @@ export default function ToolsContent() {
         </div>
       </section>
 
-      <footer className="py-12 px-4 border-t border-[#E5E0D8]">
+      <footer className="py-12 px-4 border-t border-border-cream">
         <div className="max-w-6xl mx-auto text-center">
-          <p className="text-[#6B6B6B]">© 2024 AI Tools Blog · 产品落地全流程 AI 工具分享</p>
+          <p className="text-stone-gray">© 2024 AI Tools Blog · 产品落地全流程 AI 工具分享</p>
         </div>
       </footer>
     </main>

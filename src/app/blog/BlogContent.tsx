@@ -12,18 +12,14 @@ import {
   TestTube,
   Layers,
   Bot,
-  Zap,
   Search,
   Calendar,
   Clock,
-  Eye,
-  Heart,
-  MessageCircle,
   Tag
 } from "lucide-react";
 
 const categoryConfig = [
-  { name: "全部", icon: Sparkles, slug: "all", color: "from-gray-500 to-gray-600" },
+  { name: "全部", icon: Sparkles, slug: "all", color: "from-stone-gray to-olive-gray" },
   { name: "产品设计", icon: Sparkles, slug: "product", color: "from-violet-500 to-purple-600" },
   { name: "UI/UX 设计", icon: Palette, slug: "design", color: "from-pink-500 to-rose-600" },
   { name: "前端开发", icon: Code, slug: "frontend", color: "from-blue-500 to-cyan-600" },
@@ -122,7 +118,7 @@ const container = {
 
 const item = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+  show: { opacity: 1, y: 0, transition: { duration: 0.5 } }
 };
 
 export default function BlogContent() {
@@ -138,27 +134,27 @@ export default function BlogContent() {
 
   useEffect(() => {
     let result = articlesData;
-    
+
     if (activeCategory !== "all") {
       result = result.filter(article => article.category === activeCategory);
     }
-    
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(article => 
+      result = result.filter(article =>
         article.title.toLowerCase().includes(query) ||
         article.excerpt.toLowerCase().includes(query) ||
         article.tags.some(tag => tag.toLowerCase().includes(query))
       );
     }
-    
+
     setFilteredArticles(result);
   }, [activeCategory, searchQuery]);
 
   return (
-    <main className="min-h-screen bg-[#F5EBE0]">
-      <div className="gradient-mesh fixed inset-0 -z-10" />
-      
+    <main className="min-h-screen bg-parchment">
+      <div className="fixed inset-0 -z-10" style={{ background: 'radial-gradient(circle at 50% 30%, rgba(201,100,66,0.05) 0%, transparent 60%)' }} />
+
       <section className="relative py-20 px-4 overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -170,28 +166,28 @@ export default function BlogContent() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 backdrop-blur-sm border border-[#D5CFC5] text-sm font-medium text-[#6B6B6B] mb-6"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ivory border border-border-cream text-sm font-medium text-olive-gray mb-6"
           >
-            <Sparkles className="w-4 h-4 text-amber-500" />
+            <Sparkles className="w-4 h-4 text-terracotta" />
             <span>Product Development Blog</span>
           </motion.div>
-          
-          <h1 className="text-4xl md:text-6xl font-bold text-[#1a1a1a] mb-4">
-            产品落地 <span className="text-[#D5BDAF]">博客</span>
+
+          <h1 className="text-4xl md:text-6xl font-serif font-medium text-nearBlack mb-4">
+            产品落地 <span className="text-terracotta">博客</span>
           </h1>
-          
-          <p className="text-lg text-[#6B6B6B] max-w-2xl mx-auto mb-8">
+
+          <p className="text-lg text-olive-gray max-w-2xl mx-auto mb-10">
             记录产品从 0 到 1 的全过程，分享 AI 工具使用心得和实战经验
           </p>
 
           <div className="max-w-xl mx-auto relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-gray" />
             <input
               type="text"
               placeholder="搜索文章标题、内容或标签..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 rounded-full bg-white border border-[#E5E0D8] focus:border-[#D5BDAF] focus:outline-none focus:ring-2 focus:ring-[#D5BDAF]/20 transition-all shadow-sm"
+              className="w-full pl-12 pr-4 py-4 rounded-full bg-ivory border border-border-cream focus:border-terracotta focus:outline-none focus:ring-2 focus:ring-terracotta/20 transition-all"
             />
           </div>
         </motion.div>
@@ -211,11 +207,11 @@ export default function BlogContent() {
                 onClick={() => setActiveCategory(category.slug)}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-medium text-sm transition-all ${
                   activeCategory === category.slug
-                    ? "bg-[#1a1a1a] text-white shadow-lg"
-                    : "bg-white text-[#6B6B6B] border border-[#E5E0D8] hover:border-[#D5BDAF]"
+                    ? "bg-nearBlack text-ivory shadow-lg"
+                    : "bg-ivory text-olive-gray border border-border-cream hover:border-border-warm"
                 }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
               >
                 <category.icon className="w-4 h-4" />
                 {category.name}
@@ -227,26 +223,26 @@ export default function BlogContent() {
 
       <section className="py-12 px-4 pb-24">
         <div className="max-w-6xl mx-auto">
-          <p className="text-[#6B6B6B] mb-8">
-            共 <span className="font-semibold text-[#1a1a1a]">{filteredArticles.length}</span> 篇文章
+          <p className="text-olive-gray mb-8">
+            共 <span className="font-medium text-nearBlack">{filteredArticles.length}</span> 篇文章
             {activeCategory !== "all" && (
               <span className="ml-2">
                 （{categoryConfig.find(c => c.slug === activeCategory)?.name}）
               </span>
             )}
           </p>
-          
+
           {filteredArticles.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="text-center py-20"
             >
-              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#E5E0D8] flex items-center justify-center">
-                <Search className="w-10 h-10 text-[#9CA3AF]" />
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-warmSand flex items-center justify-center">
+                <Search className="w-10 h-10 text-stone-gray" />
               </div>
-              <h3 className="text-xl font-semibold text-[#1a1a1a] mb-2">未找到相关文章</h3>
-              <p className="text-[#6B6B6B]">试试其他关键词或分类</p>
+              <h3 className="text-xl font-serif font-medium text-nearBlack mb-2">未找到相关文章</h3>
+              <p className="text-olive-gray">试试其他关键词或分类</p>
             </motion.div>
           ) : (
             <motion.div
@@ -259,52 +255,52 @@ export default function BlogContent() {
                 <motion.article
                   key={article.id}
                   variants={item}
-                  className="group bg-white rounded-2xl border-2 border-[#E5E0D8] hover:border-[#D5BDAF] overflow-hidden transition-all"
-                  whileHover={{ y: -5 }}
+                  className="group bg-ivory rounded-xl border border-border-cream hover:shadow-whisper transition-all duration-300 overflow-hidden"
+                  whileHover={{ y: -4 }}
                 >
                   <Link href={`/blog/${article.id}`}>
                     <div className="relative h-48 overflow-hidden">
-                      <div 
+                      <div
                         className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
                         style={{ backgroundImage: `url(${article.cover})` }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-nearBlack/40 to-transparent" />
                       <div className="absolute bottom-4 left-4">
-                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium text-white bg-gradient-to-r ${categoryConfig.find(c => c.slug === article.category)?.color}`}>
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium text-ivory bg-gradient-to-r ${categoryConfig.find(c => c.slug === article.category)?.color}`}>
                           {categoryConfig.find(c => c.slug === article.category)?.name}
                         </span>
                       </div>
                     </div>
-                    
+
                     <div className="p-6">
-                      <h3 className="text-lg font-bold text-[#1a1a1a] mb-3 line-clamp-2 group-hover:text-[#D5BDAF] transition-colors">
+                      <h3 className="text-lg font-serif font-medium text-nearBlack mb-3 line-clamp-2 group-hover:text-terracotta transition-colors">
                         {article.title}
                       </h3>
-                      
-                      <p className="text-[#6B6B6B] text-sm mb-4 line-clamp-2">
+
+                      <p className="text-olive-gray text-sm mb-5 line-clamp-2">
                         {article.excerpt}
                       </p>
-                      
-                      <div className="flex flex-wrap gap-2 mb-4">
+
+                      <div className="flex flex-wrap gap-2 mb-5">
                         {article.tags.slice(0, 3).map((tag) => (
                           <span
                             key={tag}
-                            className="flex items-center gap-1 px-2 py-1 rounded-full bg-[#F5EBE0] text-[#6B6B6B] text-xs"
+                            className="flex items-center gap-1 px-2 py-1 rounded-full bg-warmSand text-charcoalWarm text-xs"
                           >
                             <Tag className="w-3 h-3" />
                             {tag}
                           </span>
                         ))}
                       </div>
-                      
-                      <div className="flex items-center justify-between pt-4 border-t border-[#E5E0D8]">
+
+                      <div className="flex items-center justify-between pt-4 border-t border-border-cream">
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#D5BDAF] to-[#E3D5CA] flex items-center justify-center text-white font-medium text-sm">
+                          <div className="w-8 h-8 rounded-full bg-terracotta flex items-center justify-center text-ivory font-medium text-sm">
                             {article.author.avatar}
                           </div>
-                          <span className="text-sm text-[#6B6B6B]">{article.author.name}</span>
+                          <span className="text-sm text-olive-gray">{article.author.name}</span>
                         </div>
-                        <div className="flex items-center gap-3 text-xs text-[#9CA3AF]">
+                        <div className="flex items-center gap-3 text-xs text-stone-gray">
                           <span className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
                             {article.publishedAt}

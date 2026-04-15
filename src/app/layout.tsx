@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Space_Grotesk, Outfit, Noto_Sans_SC, Geist } from 'next/font/google';
+import { AuthProvider } from '@/contexts/auth-context';
 import './globals.css';
 import { cn } from '@/lib/utils';
 
@@ -34,9 +35,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='zh-CN' className={cn("scroll-smooth", "font-sans", geist.variable)}>
+    <html lang='zh-CN' suppressHydrationWarning className={cn("scroll-smooth", "font-sans", geist.variable)}>
       <body className={cn(spaceGrotesk.variable, outfit.variable, notoSansSC.variable, 'min-h-screen antialiased font-sans')}>
-        {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme');
+                  if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                  }
+                } catch (e) {}
+              })();
+            `
+          }}
+        />
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
