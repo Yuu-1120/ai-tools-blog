@@ -42,3 +42,7 @@ next-env.d.ts
 # OS
 .DS_Store
 Thumbs.db
+
+# Claude AI 助手
+CLAUDE.local.md
+.claude/settings.local.json

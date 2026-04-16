@@ -2,72 +2,62 @@
 
 import { motion, useScroll, useTransform } from 'framer-motion';
 import React, { useRef, useState, useEffect } from 'react';
-import {
-  ArrowRight,
-  Sparkles,
-  Code,
-  Palette,
-  TestTube,
-  Layers,
-  Bot,
-  Zap,
-  TrendingUp,
-  Star,
-  ChevronRight
-} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ArrowRight, Sparkles, Zap, Star, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
-import { HomeData } from '@/types/home';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { Navbar } from '@/components/ui/navbar';
 import { useAuth } from '@/contexts/auth-context';
-import { User } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import ChatBot from '@/components/ChatBot';
 
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Sparkles,
-  Code,
-  Palette,
-  TestTube,
-  Layers,
-  Bot
-};
+const Antigravity = dynamic(() => import('@/components/Antigravity'), {
+  ssr: false,
+  loading: () => null
+});
 
 export default function Home() {
-  const [homeData, setHomeData] = useState<HomeData | null>(null);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [tools, setTools] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    async function fetchHomeData() {
+    if (!authLoading && !user && mounted) {
+      router.push('/auth/login');
+    }
+  }, [authLoading, user, mounted, router]);
+
+  useEffect(() => {
+    async function fetchData() {
       try {
         const res = await fetch('/api/home');
         const result = await res.json();
         if (result.code === 200 && result.data) {
-          setHomeData(result.data);
+          setCategories(result.data.categories || []);
+          setTools(result.data.tools || []);
         }
       } catch (error) {
-        console.error('Failed to fetch home data:', error);
+        console.error('Failed to fetch data:', error);
       } finally {
         setLoading(false);
       }
     }
-    fetchHomeData();
-  }, []);
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
 
   const ref = useRef(null);
   const { scrollYProgress } = useScroll();
-  const headerScroll = useScroll({
-    target: ref,
-    offset: ['start start', 'end start']
-  });
+  const progressWidth = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
 
-  const y = useTransform(headerScroll.scrollYProgress, [0, 1], [0, 100]);
-  const opacity = useTransform(headerScroll.scrollYProgress, [0, 0.5], [1, 0]);
-
-  if (loading) {
+  if (!mounted || authLoading || loading) {
     return (
       <main className='min-h-screen bg-parchment'>
         <div
@@ -84,59 +74,43 @@ export default function Home() {
     );
   }
 
-  const categories = homeData?.categories || [];
-  const featuredTools = homeData?.featuredTools || [];
-  const processSteps = homeData?.processSteps || [];
-
   return (
     <main className='min-h-screen bg-parchment'>
-      {mounted && (
-        <motion.div
-          className='fixed top-0 left-0 right-0 h-0.5 bg-terracotta z-50 origin-left'
-          style={{ scaleX: scrollYProgress }}
-        />
-      )}
-
-      <div className='fixed top-6 right-6 z-50 flex items-center gap-3'>
-        {user ? (
-          <div className='flex items-center gap-2 px-4 py-2 rounded-lg bg-ivory/80 backdrop-blur-sm border border-border-cream shadow-whisper'>
-            <div className='w-7 h-7 rounded-full bg-terracotta flex items-center justify-center'>
-              <User className='w-4 h-4 text-ivory' />
-            </div>
-            <span className='hidden sm:inline text-sm font-medium text-charcoalWarm'>{user.email}</span>
-            <button
-              onClick={() => signOut()}
-              className='ml-2 text-xs text-olive-gray hover:text-terracotta transition-colors'
-            >
-              退出
-            </button>
-          </div>
-        ) : (
-          <Link
-            href='/auth/login'
-            className='px-5 py-2 rounded-lg bg-terracotta text-ivory font-medium hover:bg-coral transition-colors text-sm'
-          >
-            登录
-          </Link>
-        )}
-        <ThemeToggle />
-      </div>
-
-      <div
-        className='fixed inset-0 -z-10'
-        style={{
-          background:
-            'radial-gradient(circle at 50% 50%, rgba(201,100,66,0.06) 0%, rgba(217,119,87,0.03) 40%, transparent 70%)'
-        }}
-      />
-
+      <motion.div className='fixed top-0 left-0 right-0 h-0.5 bg-terracotta/30 z-50'>
+        <motion.div className='h-full bg-terracotta origin-left' style={{ width: progressWidth }} />
+      </motion.div>
+      <Navbar />
+      {/* 背景 */}
+      {/* 内容 */}
       <section ref={ref} className='relative min-h-screen flex items-center justify-center overflow-hidden'>
-        <motion.div style={{ y, opacity }} className='max-w-5xl mx-auto text-center relative z-10 px-4 pt-20'>
+        <div className='absolute inset-0 z-0 pointer-events-none'>
+          {mounted && (
+            <Antigravity
+              count={300}
+              magnetRadius={10}
+              ringRadius={10}
+              waveSpeed={0.4}
+              waveAmplitude={1}
+              particleSize={2}
+              lerpSpeed={0.1}
+              autoAnimate={false}
+              color='#c96442'
+              particleVariance={1}
+              rotationSpeed={0}
+              depthFactor={1}
+              pulseSpeed={3}
+              particleShape='capsule'
+              fieldStrength={10}
+            />
+          )}
+        </div>
+
+        <motion.div style={{ opacity: 1 }} className='max-w-5xl mx-auto text-center relative z-10 px-4 pt-20'>
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-            className='inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ivory border border-border-cream text-sm font-medium text-olive-gray mb-12'
+            className='inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ivory/80 backdrop-blur-sm border border-warm-200 shadow-sm text-sm font-medium text-warm-600 mb-12'
           >
             <Zap className='w-4 h-4 text-terracotta' />
             <span>发现最棒的 AI 工具</span>
@@ -148,7 +122,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <span className='text-nearBlack block mb-2'>AI Tools</span>
+            <span className='text-warm-900 block mb-2'>AI Tools</span>
             <span className='text-terracotta block'>Blog</span>
           </motion.h1>
 
@@ -158,11 +132,11 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.6 }}
           >
-            <p className='text-lg md:text-xl text-olive-gray max-w-2xl mx-auto leading-relaxed font-body'>
-              记录产品从 <span className='text-nearBlack font-medium'>0 → 1</span> 落地全流程
+            <p className='text-lg md:text-xl text-warm-600 max-w-2xl mx-auto leading-relaxed'>
+              按用途分类的 <span className='text-warm-900 font-medium'>AI 工具百科</span>
             </p>
-            <p className='text-lg md:text-xl text-olive-gray max-w-2xl mx-auto leading-relaxed font-body'>
-              分享每个阶段可使用的 <span className='text-nearBlack font-medium'>AI 工具</span>
+            <p className='text-lg md:text-xl text-warm-600 max-w-2xl mx-auto leading-relaxed'>
+              图像 · 视频 · 对话 · 编程 · 设计 · 音频 · 写作 · Agent
             </p>
           </motion.div>
 
@@ -172,225 +146,163 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.6 }}
           >
-            <Link href='/tools'>
+            <Link href='/categories'>
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
-                className='btn-terracotta inline-flex items-center gap-3 text-base'
+                className='px-8 py-3 bg-terracotta text-ivory rounded-lg font-medium hover:bg-coral transition-colors inline-flex items-center gap-3'
               >
-                探索 AI 工具
+                浏览分类
                 <ArrowRight className='w-5 h-5' />
               </motion.button>
             </Link>
-            <Link href='/blog'>
+            <Link href='/articles'>
               <motion.button
                 whileHover={{ scale: 1.03, backgroundColor: '#e8e6dc' }}
                 whileTap={{ scale: 0.98 }}
-                className='btn-warm-sand inline-flex items-center gap-3 text-base'
+                className='px-8 py-3 bg-ivory text-warm-700 rounded-lg font-medium hover:bg-warm-100 transition-colors inline-flex items-center gap-3 border border-warm-200'
               >
-                阅读博客
+                阅读文章
                 <Sparkles className='w-5 h-5' />
               </motion.button>
             </Link>
           </motion.div>
 
           <motion.div
-            className='mt-16 flex items-center justify-center gap-10 text-stone-gray'
+            className='mt-16 flex items-center justify-center gap-10 text-warm-500'
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
           >
             <div className='flex items-center gap-2'>
               <Star className='w-4 h-4 text-terracotta fill-terracotta' />
-              <span className='text-sm font-medium'>200+ 工具</span>
+              <span className='text-sm font-medium'>{categories.length} 个分类</span>
             </div>
             <div className='flex items-center gap-2'>
-              <TrendingUp className='w-4 h-4 text-coral' />
-              <span className='text-sm font-medium'>每周更新</span>
-            </div>
-            <div className='flex items-center gap-2'>
-              <Layers className='w-4 h-4 text-oliveGray' />
-              <span className='text-sm font-medium'>6 大阶段</span>
+              <Sparkles className='w-4 h-4 text-coral' />
+              <span className='text-sm font-medium'>{tools.length} 个工具</span>
             </div>
           </motion.div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 0.06, scale: 1 }}
-          transition={{ duration: 1.5, delay: 0.5 }}
-          className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[20rem] md:text-[28rem] font-serif font-medium text-nearBlack select-none pointer-events-none -z-10'
-        >
-          AI
-        </motion.div>
-
-        <motion.div
-          className='absolute bottom-8 left-1/2 -translate-x-1/2'
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <div className='w-6 h-10 rounded-full border border-border-warm flex items-start justify-center p-1'>
-            <motion.div
-              className='w-1 h-2 rounded-full bg-terracotta'
-              animate={{ y: [0, 12, 0], opacity: [1, 0.5, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </div>
         </motion.div>
       </section>
-
-      <section className='py-24 px-4'>
+      {/* 分类 */}
+      <section className='py-24 px-4 bg-ivory'>
         <div className='max-w-6xl mx-auto'>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6 }}
-            className='mb-16'
-          >
-            <span className='section-label'>01 / 分类浏览</span>
-            <h2 className='text-3xl md:text-5xl font-serif font-medium text-nearBlack mt-3'>选择你的阶段</h2>
-            <p className='text-olive-gray text-lg mt-3 max-w-xl'>按产品落地流程分类，发现各阶段最佳 AI 工具</p>
-          </motion.div>
+          <div className='text-center mb-16'>
+            <span className='text-sm font-medium text-terracotta tracking-widest uppercase'>8 大分类</span>
+            <h2 className='text-4xl md:text-5xl font-serif font-medium text-warm-900 mt-4 mb-4'>按用途探索</h2>
+            <p className='text-warm-500 max-w-xl mx-auto'>从图像到 Agent，找到最适合你的 AI 工具</p>
+          </div>
 
-          <div className='grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6'>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5'>
             {categories.map((category, index) => (
               <motion.div
-                key={category.slug}
+                key={category.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.08 }}
               >
-                <Link href={`/tools?category=${category.slug}`}>
-                  <motion.div
-                    className='group relative p-6 md:p-8 bg-ivory rounded-xl border border-border-cream cursor-pointer transition-all duration-300 hover:shadow-whisper'
-                    whileHover={{ y: -4 }}
-                  >
-                    <div
-                      className={`inline-flex p-3 rounded-lg mb-5`}
-                      style={{ backgroundColor: category.bg_color || '#e8e6dc' }}
-                    >
-                      {category.icon &&
-                        iconMap[category.icon] &&
-                        React.createElement(iconMap[category.icon], { className: 'w-6 h-6 text-nearBlack' })}
-                    </div>
-                    <h3 className='text-xl font-serif font-medium text-nearBlack mb-1 group-hover:text-terracotta transition-colors'>
+                <Link href={`/categories/${category.slug}`}>
+                  <div className='group relative h-full min-h-[180px] p-6 bg-parchment rounded-xl border border-warm-200 hover:border-terracotta/30 hover:shadow-lg transition-all cursor-pointer'>
+                    <div className='text-4xl mb-4'>{category.icon}</div>
+                    <h3 className='text-lg font-medium text-warm-900 mb-2 group-hover:text-terracotta transition-colors'>
                       {category.name}
                     </h3>
-                    <ArrowRight className='w-5 h-5 text-stone-gray absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-2 transition-all duration-300' />
-                  </motion.div>
+                    <p className='text-sm text-warm-500 line-clamp-2'>{category.description}</p>
+                    <div className='absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity'>
+                      <ArrowRight className='w-5 h-5 text-terracotta' />
+                    </div>
+                  </div>
                 </Link>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
-
-      <section className='py-24 px-4 bg-ivory'>
+      {/* 预选工具 */}
+      <section className='py-24 px-4 '>
         <div className='max-w-6xl mx-auto'>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6 }}
-            className='mb-16'
-          >
-            <span className='section-label'>02 / 热门推荐</span>
-            <h2 className='text-3xl md:text-5xl font-serif font-medium text-nearBlack mt-3'>最受欢迎的 AI 工具</h2>
-            <p className='text-olive-gray text-lg mt-3 max-w-xl'>开发者们正在使用的 AI 工具推荐</p>
-          </motion.div>
+          <div className='flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4'>
+            <div>
+              <span className='text-sm font-medium text-terracotta tracking-widest uppercase'>精选工具</span>
+              <h2 className='text-4xl md:text-5xl font-serif font-medium text-warm-900 mt-4'>热门 AI 产品</h2>
+            </div>
+          </div>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-            {featuredTools.map((tool, index) => (
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+            {tools.slice(0, 6).map((tool, index) => (
               <motion.div
                 key={tool.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.08 }}
-                className='group relative p-6 bg-parchment rounded-xl border border-border-cream hover:shadow-whisper transition-all duration-300'
-                whileHover={{ y: -4 }}
               >
-                <div className='flex items-center justify-between mb-5'>
-                  <div
-                    className='w-12 h-12 rounded-lg flex items-center justify-center text-lg font-serif font-medium text-ivory'
-                    style={{ backgroundColor: '#c96442' }}
-                  >
-                    {tool.name.charAt(0)}
+                <div className='group p-6 bg-parchment rounded-xl border border-warm-200 hover:shadow-lg hover:-translate-y-0.5 transition-all h-full flex flex-col bg-ivory'>
+                  <div className='flex items-start justify-between mb-4'>
+                    <div className='w-12 h-12 rounded-lg bg-gradient-to-br from-terracotta to-coral flex items-center justify-center text-lg font-bold text-ivory'>
+                      {tool.name.charAt(0)}
+                    </div>
+                    <span
+                      className={`px-2 py-1 rounded text-xs font-medium ${
+                        tool.pricing === 'free'
+                          ? 'bg-green-100 text-green-700'
+                          : tool.pricing === 'freemium'
+                            ? 'bg-yellow-100 text-yellow-700'
+                            : 'bg-red-100 text-red-700'
+                      }`}
+                    >
+                      {tool.pricing === 'free' ? '免费' : tool.pricing === 'freemium' ? '免费+' : '付费'}
+                    </span>
                   </div>
-                  <span className='px-3 py-1 rounded-full bg-warmSand text-charcoalWarm text-sm font-medium'>
-                    {tool.users}
-                  </span>
-                </div>
-                <h3 className='text-xl font-serif font-medium text-nearBlack mb-2 group-hover:text-terracotta transition-colors'>
-                  {tool.name}
-                </h3>
-                <p className='text-olive-gray text-sm mb-4 line-clamp-2'>{tool.description}</p>
-                <div className='flex items-center gap-2 text-sm text-stone-gray'>
-                  <TrendingUp className='w-4 h-4' />
-                  <span>{tool.category_slug}</span>
+
+                  <h3 className='text-lg font-medium text-warm-900 mb-2 group-hover:text-terracotta transition-colors'>
+                    {tool.name}
+                  </h3>
+                  <p className='text-warm-500 text-sm mb-4 line-clamp-2 flex-grow'>{tool.description}</p>
+
+                  <div className='flex items-center justify-between mt-auto pt-4 border-t border-warm-100'>
+                    <span className='text-sm text-warm-400'>{tool.category?.name}</span>
+                    <a
+                      href={tool.website_url}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='flex items-center gap-1 text-sm text-terracotta hover:underline'
+                    >
+                      访问
+                      <ExternalLink className='w-3 h-3' />
+                    </a>
+                  </div>
                 </div>
               </motion.div>
             ))}
           </div>
+
+          {tools.length > 6 && (
+            <div className='mt-12 text-center'>
+              <Link href='/tools'>
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className='px-8 py-3 bg-terracotta text-ivory rounded-lg font-medium hover:bg-coral transition-colors inline-flex items-center gap-3'
+                >
+                  查看全部 {tools.length} 个工具
+                  <ArrowRight className='w-5 h-5' />
+                </motion.button>
+              </Link>
+            </div>
+          )}
         </div>
       </section>
-
-      <section className='py-24 px-4'>
-        <div className='max-w-6xl mx-auto'>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6 }}
-            className='mb-16'
-          >
-            <span className='section-label'>03 / 落地流程</span>
-            <h2 className='text-3xl md:text-5xl font-serif font-medium text-nearBlack mt-3'>产品落地流程</h2>
-            <p className='text-olive-gray text-lg mt-3 max-w-xl'>从 0 到 1 的完整指南</p>
-          </motion.div>
-
-          <div className='space-y-4'>
-            {processSteps.map((process, index) => (
-              <motion.div
-                key={process.step}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className='group relative flex flex-col md:flex-row md:items-center gap-4 md:gap-10 p-6 md:p-8 bg-ivory rounded-xl border border-border-cream hover:shadow-whisper transition-all duration-300'
-                whileHover={{ x: 4 }}
-              >
-                <div className='flex items-center gap-6 md:w-36'>
-                  <span className='text-4xl md:text-5xl font-serif font-medium text-terracotta group-hover:text-coral transition-colors'>
-                    {process.step}
-                  </span>
-                  <div className='w-px h-12 bg-border-warm hidden md:block' />
-                </div>
-                <div className='flex-1'>
-                  <h3 className='text-2xl font-serif font-medium text-nearBlack mb-2'>{process.title}</h3>
-                  <p className='text-olive-gray mb-4'>{process.description}</p>
-                  <div className='flex flex-wrap gap-2'>
-                    {process.tools?.map((tool: string) => (
-                      <span key={tool} className='px-3 py-1 rounded-full bg-warmSand text-charcoalWarm text-sm'>
-                        {tool}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <ArrowRight className='w-6 h-6 text-terracotta opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-3 transition-all duration-300 hidden md:block' />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <footer className='py-12 px-4 border-t border-border-cream'>
+      {/* footer */}
+      <section className='py-8 px-4  bg-ivory'>
         <div className='max-w-6xl mx-auto text-center'>
-          <p className='text-stone-gray'>© 2024 AI Tools Blog · 产品落地全流程 AI 工具分享</p>
+          <p className='text-warm-500'>© 2026 AI Tools Blog · 仅供学习交流使用</p>
         </div>
-      </footer>
+      </section>
+      {/* 聊天机器人 */}
+      <ChatBot />
     </main>
   );
 }

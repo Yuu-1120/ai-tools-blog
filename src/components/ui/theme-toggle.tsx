@@ -27,8 +27,8 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <button className="w-10 h-10 rounded-lg bg-warmSand flex items-center justify-center">
-        <span className="w-5 h-5" />
+      <button className='w-10 h-10 rounded-full bg-ivory/80 backdrop-blur-sm border border-border-cream shadow-sm flex items-center justify-center'>
+        <span className='w-5 h-5' />
       </button>
     );
   }
@@ -36,8 +36,8 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="w-10 h-10 rounded-lg bg-warmSand hover:bg-border-warm flex items-center justify-center transition-all duration-200"
-      aria-label="Toggle theme"
+      className='w-10 h-10 rounded-full bg-ivory/80 backdrop-blur-sm border border-border-cream shadow-sm hover:bg-parchment flex items-center justify-center transition-all duration-200'
+      aria-label='Toggle theme'
     >
       {isDark ? (
         <svg className="w-5 h-5 text-terracotta" fill="none" viewBox="0 0 24 24" stroke="currentColor">

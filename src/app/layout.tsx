@@ -4,7 +4,7 @@ import { AuthProvider } from '@/contexts/auth-context';
 import './globals.css';
 import { cn } from '@/lib/utils';
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -25,8 +25,8 @@ const notoSansSC = Noto_Sans_SC({
 });
 
 export const metadata: Metadata = {
-  title: 'AI Tools Blog - 产品落地全流程 AI 工具分享',
-  description: '分享产品从 0-1 落地全过程中使用的 AI 工具，包括产品设计、UI/UX、前端开发、后端开发、测试等各阶段'
+  title: 'AI Tools Blog.',
+  description: '按用途分类的 AI 工具百科，图像·视频·对话·编程·设计·音频·写作·Agent'
 };
 
 export default function RootLayout({
@@ -35,8 +35,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='zh-CN' suppressHydrationWarning className={cn("scroll-smooth", "font-sans", geist.variable)}>
-      <body className={cn(spaceGrotesk.variable, outfit.variable, notoSansSC.variable, 'min-h-screen antialiased font-sans')}>
+    <html lang='zh-CN' suppressHydrationWarning className={cn('scroll-smooth', 'font-sans', geist.variable)}>
+      <body
+        suppressHydrationWarning
+        className={cn(
+          spaceGrotesk.variable,
+          outfit.variable,
+          notoSansSC.variable,
+          'min-h-screen antialiased font-sans'
+        )}
+      >
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -51,9 +59,7 @@ export default function RootLayout({
             `
           }}
         />
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

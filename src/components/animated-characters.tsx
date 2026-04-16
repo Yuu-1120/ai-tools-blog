@@ -41,6 +41,7 @@ export default function AnimatedCharacters({
   isLoginError = false
 }: AnimatedCharactersProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
   const [mouseX, setMouseX] = useState(0);
   const [mouseY, setMouseY] = useState(0);
 
@@ -52,6 +53,7 @@ export default function AnimatedCharacters({
   const [isPurplePeeking, setIsPurplePeeking] = useState(false);
   const [isLookingAtEachOther, setIsLookingAtEachOther] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isShaking, setIsShaking] = useState(false);
   const [internalError, setInternalError] = useState(false);
 
   const purplePeekTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -188,6 +190,7 @@ export default function AnimatedCharacters({
   }, [c.blinkDuration, c.blinkRandomRange, c.blinkMinInterval]);
 
   useEffect(() => {
+    setMounted(true);
     attachMouse();
     startBlinking();
     setDefaultMouse();
@@ -543,9 +546,14 @@ export default function AnimatedCharacters({
     };
   }, [blackBlushBase, blackBlushConfig]);
 
+  const handleShake = useCallback(() => {
+    setIsShaking(true);
+    setTimeout(() => setIsShaking(false), 500);
+  }, []);
+
   const wrapStyle = {
-    transform: `scale(${c.scale})`,
-    transformOrigin: 'bottom center',
+    cursor: 'pointer',
+    '--ac-scale': c.scale,
     '--ac-purple': c.purpleColor,
     '--ac-black': c.blackColor,
     '--ac-orange': c.orangeColor,
@@ -554,8 +562,12 @@ export default function AnimatedCharacters({
     '--ac-pupil-transition': `${Math.max(c.transitionDuration, 0.75)}s`
   } as React.CSSProperties;
 
+  if (!mounted) {
+    return <div style={{ width: 520, height: 420 }} />;
+  }
+
   return (
-    <div ref={wrapRef} className='ac-wrap' style={wrapStyle}>
+    <div ref={wrapRef} className={`ac-wrap ${isShaking ? 'shaking' : ''}`} style={wrapStyle} onClick={handleShake}>
       <style jsx>{`
         .ac-wrap {
           width: 520px;
@@ -564,6 +576,32 @@ export default function AnimatedCharacters({
           display: flex;
           align-items: flex-end;
           justify-content: center;
+          cursor: pointer;
+          transform: scale(var(--ac-scale, 0.88));
+          transform-origin: bottom center;
+          transition: filter 0.15s ease;
+        }
+
+        .ac-wrap.shaking {
+          animation: shake 0.4s ease-in-out;
+        }
+        @keyframes shake {
+          0%,
+          100% {
+            transform: scale(var(--ac-scale, 0.88)) rotate(0deg);
+          }
+          20% {
+            transform: scale(var(--ac-scale, 0.88)) rotate(-3deg);
+          }
+          40% {
+            transform: scale(var(--ac-scale, 0.88)) rotate(3deg);
+          }
+          60% {
+            transform: scale(var(--ac-scale, 0.88)) rotate(-2deg);
+          }
+          80% {
+            transform: scale(var(--ac-scale, 0.88)) rotate(2deg);
+          }
         }
         .ac-figure {
           position: absolute;

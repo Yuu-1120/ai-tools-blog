@@ -64,7 +64,7 @@ export default function LoginPage() {
           <span className='text-nearBlack'>AI Tools Blog.</span>
         </div>
 
-        <div className='relative z-20 flex items-end justify-center h-[500px]'>
+        <div className='relative z-20 flex items-center justify-center h-[500px]'>
           <AnimatedCharacters
             focusedField={focusedField}
             isPasswordVisible={showPassword}
@@ -87,10 +87,10 @@ export default function LoginPage() {
       <div className='flex items-center justify-center p-8 bg-parchment'>
         <div className='w-full max-w-[420px]'>
           <div className='lg:hidden flex items-center justify-center gap-2 text-lg font-semibold mb-12'>
-            <div className='w-8 h-8 rounded-lg bg-terracotta flex items-center justify-center'>
+            {/* <div className='w-8 h-8 rounded-lg bg-terracotta flex items-center justify-center'>
               <span className='text-ivory text-sm'>AI</span>
-            </div>
-            <span className='text-nearBlack'>AI Tools Blog</span>
+            </div> */}
+            <span className='text-nearBlack'>AI Tools Blog.</span>
           </div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>

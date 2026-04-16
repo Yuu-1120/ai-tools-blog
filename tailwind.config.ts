@@ -33,6 +33,10 @@ const config: Config = {
         'dark-text-tertiary': '#b0aea5',
         'dark-border': '#30302e'
       },
+      ringColor: {
+        DEFAULT: 'var(--terracotta)',
+        terracotta: 'var(--terracotta)',
+      },
       fontFamily: {
         serif: ['Georgia', "'Times New Roman'", 'Times', 'serif'],
         sans: ['var(--font-body)', 'var(--font-chinese)', 'system-ui', 'sans-serif'],
